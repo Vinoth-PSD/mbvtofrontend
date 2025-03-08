@@ -73,7 +73,7 @@ const LookGenerator = () => {
       formData.append('target_image', selectedLook.imageFile);
       formData.append('swap_image', userPhotoFile);
 
-      const response = await fetch('http://localhost:8000/api/face-swap/generate/', {
+      const response = await fetch('https://mbvto-degfaze9b7gydca2.eastus2-01.azurewebsites.net/api/face-swap/generate/', {
         method: 'POST',
         body: formData
       });
@@ -110,7 +110,7 @@ const LookGenerator = () => {
       window.URL.revokeObjectURL(url);
 
       // Action 2: Save to server
-      const saveResponse = await fetch('http://localhost:8000/api/face-swap/save/', {
+      const saveResponse = await fetch('https://mbvto-degfaze9b7gydca2.eastus2-01.azurewebsites.net/api/face-swap/save/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
