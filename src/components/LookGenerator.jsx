@@ -6,6 +6,13 @@ import {
   SparklesIcon, 
   CheckCircleIcon 
 } from '@heroicons/react/24/outline';
+import Breadcrumb from './look-selection/Breadcrumb';
+import CategoryGrid from './look-selection/CategoryGrid';
+import SubcategoryGrid from './look-selection/SubcategoryGrid';
+import LookGrid from './look-selection/LookGrid';
+import PhotoUpload from './steps/PhotoUpload';
+import GenerateLook from './steps/GenerateLook';
+import FinalLook from './steps/FinalLook';
 
 const StepIcon = ({ icon: Icon, active, title, onClick, clickable }) => (
   <div 
@@ -33,11 +40,24 @@ const LookGenerator = () => {
   const [generatedLook, setGeneratedLook] = useState(null);
   const [categories, setCategories] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Load categories and their images
-    const loadedCategories = loadCategoryImages();
-    setCategories(loadedCategories);
+    async function loadImages() {
+      try {
+        setIsLoading(true);
+        const loadedCategories = await loadCategoryImages();
+        setCategories(loadedCategories);
+      } catch (error) {
+        console.error('Error loading categories:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadImages();
   }, []);
 
   const handlePhotoUpload = (e) => {
@@ -160,6 +180,23 @@ const LookGenerator = () => {
     }
   };
 
+  const handleCategorySelect = (category) => {
+    setSelectedCategory(category);
+    setSelectedSubcategory(null);
+  };
+
+  const handleSubcategorySelect = (subcategory) => {
+    setSelectedSubcategory(subcategory);
+  };
+
+  const handleBack = () => {
+    if (selectedSubcategory) {
+      setSelectedSubcategory(null);
+    } else if (selectedCategory) {
+      setSelectedCategory(null);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Sticky Progress Steps */}
@@ -195,254 +232,65 @@ const LookGenerator = () => {
           <div className="min-h-[calc(100vh-200px)] flex flex-col">
             {step === 1 && (
               <div>
-                <h2 className="text-2xl font-bold mb-4">Select a Celebrity Look</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {categories.map((category) => (
-                    <div key={category.id} className="border rounded-lg overflow-hidden">
-                      <h3 className="text-xl font-semibold p-4 bg-gray-50">{category.name}</h3>
-                      <div className="grid grid-cols-2 gap-4 p-4">
-                        {category.looks.map((look) => (
-                          <button
-                            key={look.id}
-                            onClick={() => handleLookSelect(look)}
-                            className="relative group overflow-hidden rounded-lg"
-                          >
-                            <img
-                              src={look.image}
-                              alt={look.title}
-                              className="w-full aspect-square object-cover transition-transform group-hover:scale-105"
-                            />
-                            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2 text-sm">
-                              {look.title}
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+                <h2 className="text-2xl font-bold mb-6">Select a Look</h2>
+                
+                <Breadcrumb 
+                  selectedCategory={selectedCategory}
+                  selectedSubcategory={selectedSubcategory}
+                  onCategoryClick={setSelectedCategory}
+                  onSubcategoryClick={setSelectedSubcategory}
+                />
+
+                <div className="grid grid-cols-1 gap-8">
+                  {!selectedCategory ? (
+                    <CategoryGrid 
+                      categories={categories} 
+                      onCategorySelect={handleCategorySelect} 
+                    />
+                  ) : !selectedSubcategory ? (
+                    <SubcategoryGrid 
+                      subcategories={selectedCategory.subcategories} 
+                      onSubcategorySelect={handleSubcategorySelect}
+                    />
+                  ) : (
+                    <LookGrid 
+                      subcategory={selectedSubcategory}
+                      onBack={handleBack}
+                      onLookSelect={handleLookSelect}
+                    />
+                  )}
                 </div>
               </div>
             )}
 
             {step === 2 && (
-              <div className="max-w-5xl mx-auto">
-                <div className="grid grid-cols-2 gap-12">
-                  {/* Selected Look Side */}
-                  <div className="space-y-4">
-                    <h2 className="text-2xl font-bold text-mindfulBlack">Selected Look</h2>
-                    <div className="relative rounded-lg overflow-hidden shadow-lg">
-                      <img
-                        src={selectedLook.image}
-                        alt={selectedLook.title}
-                        className="w-full aspect-square object-cover"
-                      />
-                      <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-3">
-                        <p className="text-lg font-medium">{selectedLook.title}</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setStep(1)}
-                      className="w-full py-3 px-4 text-main hover:text-white border-2 border-main hover:bg-main rounded-lg transition-all duration-300 font-medium"
-                    >
-                      Choose Different Look
-                    </button>
-                  </div>
-
-                  {/* Upload Photo Side */}
-                  <div className="space-y-4">
-                    <h2 className="text-2xl font-bold text-mindfulBlack">Upload Your Photo</h2>
-                    <div className={`border-2 border-dashed rounded-lg ${
-                      userPhoto ? 'border-main' : 'border-gray-300'
-                    } p-4 text-center`}>
-                      {userPhoto ? (
-                        <div className="relative rounded-lg overflow-hidden shadow-lg">
-                          <img
-                            src={userPhoto}
-                            alt="Preview"
-                            className="w-full aspect-square object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <div className="py-12">
-                          <UserIcon className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                          <label className="cursor-pointer">
-                            <span className="bg-main text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all duration-300">
-                              Select Your Photo
-                            </span>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={handlePhotoUpload}
-                              className="hidden"
-                            />
-                          </label>
-                          <p className="mt-2 text-sm text-gray-500">
-                            JPG, PNG files are allowed
-                          </p>
-                        </div>
-                      )}
-                      {userPhoto && (
-                        <button
-                          onClick={() => {
-                            setUserPhoto(null);
-                            setUserPhotoFile(null);
-                          }}
-                          className="mt-4 text-gray-600 hover:text-main transition-colors"
-                        >
-                          Change Photo
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Continue Button */}
-                {userPhoto && (
-                  <div className="mt-8 text-center">
-                    <button
-                      onClick={() => setStep(3)}
-                      className="bg-main text-white px-12 py-3 rounded-lg hover:bg-opacity-90 transition-all duration-300 font-medium text-lg"
-                    >
-                      Continue to Generate
-                    </button>
-                  </div>
-                )}
-              </div>
+              <PhotoUpload 
+                selectedLook={selectedLook}
+                userPhoto={userPhoto}
+                onPhotoUpload={handlePhotoUpload}
+                onBack={() => setStep(1)}
+                onNext={() => setStep(3)}
+              />
             )}
 
             {step === 3 && (
-              <div className="max-w-5xl mx-auto">
-                <h2 className="text-2xl font-bold text-mindfulBlack text-center mb-8">
-                  {isGenerating ? 'Generating Your Look...' : 'Generate Your Look'}
-                </h2>
-                
-                {isGenerating ? (
-                  <div className="flex flex-col items-center justify-center space-y-4">
-                    <img 
-                      src="https://gray-desert-0c1e9470f.4.azurestaticapps.net/assets/loading.gif" 
-                      alt="Generating..." 
-                      className="w-24 h-24"
-                    />
-                    <p className="text-lg text-gray-600">Please wait while we create your look...</p>
-                  </div>
-                ) : (
-                  <>
-                    <div className="grid grid-cols-2 gap-12">
-                      {/* Selected Look Side */}
-                      <div className="space-y-4">
-                        <h3 className="text-xl font-semibold text-mindfulBlack">Selected Look</h3>
-                        <div className="relative rounded-lg overflow-hidden shadow-lg">
-                          <img 
-                            src={selectedLook.image} 
-                            alt={selectedLook.title} 
-                            className="w-full aspect-square object-cover"
-                          />
-                          <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-3">
-                            <p className="text-lg font-medium">{selectedLook.title}</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* User Photo Side */}
-                      <div className="space-y-4">
-                        <h3 className="text-xl font-semibold text-mindfulBlack">Your Photo</h3>
-                        <div className="relative rounded-lg overflow-hidden shadow-lg">
-                          <img 
-                            src={userPhoto} 
-                            alt="Your photo" 
-                            className="w-full aspect-square object-cover"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="mt-8 flex justify-center space-x-4">
-                      <button
-                        onClick={() => setStep(2)}
-                        className="px-8 py-3 text-main border-2 border-main hover:bg-main hover:text-white rounded-lg transition-all duration-300 font-medium"
-                      >
-                        Back to Photos
-                      </button>
-                      <button
-                        onClick={generateLook}
-                        disabled={isGenerating}
-                        className={`px-12 py-3 bg-main text-white rounded-lg transition-all duration-300 font-medium text-lg flex items-center
-                          ${isGenerating 
-                            ? 'opacity-50 cursor-not-allowed' 
-                            : 'hover:bg-opacity-90'
-                          }`}
-                      >
-                        <SparklesIcon className="w-6 h-6 mr-2" />
-                        Generate Look
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
+              <GenerateLook 
+                selectedLook={selectedLook}
+                userPhoto={userPhoto}
+                isGenerating={isGenerating}
+                onBack={() => setStep(2)}
+                onGenerate={generateLook}
+              />
             )}
 
             {step === 4 && (
-              <div className="max-w-5xl mx-auto">
-                <h2 className="text-2xl font-bold text-mindfulBlack text-center mb-8">Your Generated Look</h2>
-                
-                <div className="space-y-6">
-                  {/* Generated Image */}
-                  <div className="relative rounded-xl overflow-hidden shadow-2xl mx-auto max-w-2xl">
-                    {generatedLook && (
-                      <img
-                        src={generatedLook}
-                        alt="Generated look"
-                        className="w-full object-cover"
-                      />
-                    )}
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
-                      <p className="text-white text-lg font-medium">Your New Bridal Look</p>
-                    </div>
-                  </div>
-
-                  {/* Comparison Images */}
-                  <div className="grid grid-cols-2 gap-8 max-w-3xl mx-auto">
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium text-gray-500 text-center">Original Look</p>
-                      <div className="rounded-lg overflow-hidden shadow-lg">
-                        <img 
-                          src={selectedLook.image} 
-                          alt="Original look" 
-                          className="w-full aspect-square object-cover"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium text-gray-500 text-center">Your Photo</p>
-                      <div className="rounded-lg overflow-hidden shadow-lg">
-                        <img 
-                          src={userPhoto} 
-                          alt="Your photo" 
-                          className="w-full aspect-square object-cover"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex justify-center space-x-4 mt-8">
-                    <button
-                      onClick={() => setStep(1)}
-                      className="px-8 py-3 text-main border-2 border-main hover:bg-main hover:text-white rounded-lg transition-all duration-300 font-medium"
-                    >
-                      Try Another Look
-                    </button>
-                    <button
-                      onClick={saveLook}
-                      className="px-12 py-3 bg-main text-white rounded-lg hover:bg-opacity-90 transition-all duration-300 font-medium text-lg flex items-center"
-                    >
-                      <CheckCircleIcon className="w-6 h-6 mr-2" />
-                      Save Look
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <FinalLook 
+                generatedLook={generatedLook}
+                selectedLook={selectedLook}
+                userPhoto={userPhoto}
+                onTryAnother={() => setStep(1)}
+                onSave={saveLook}
+              />
             )}
           </div>
         </div>
