@@ -204,7 +204,7 @@ const LookGenerator = () => {
         <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="flex justify-between relative">
             {/* Progress Line */}
-            <div className="absolute top-8 left-0 right-0 h-0.5 bg-gray-200">
+            <div className="absolute top-8 left-1 right-0 h-0.5 bg-gray-200 z-[-1]">
               <div 
                 className="h-full bg-main transition-all duration-500"
                 style={{ width: `${((step - 1) / (steps.length - 1)) * 100}%` }}

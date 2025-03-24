@@ -1,20 +1,23 @@
+import mindfulBeautyNew from "../../public/images/logo/mindfulBeautyLogoNew.png";
+
 const Header = () => {
   return (
     <header className="bg-mindfulWhite shadow-lg">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-5">
         <div className="flex justify-between items-center h-[75px]">
           {/* Logo on the left */}
           <div className="flex-shrink-0">
             <img 
-              src="https://gray-desert-0c1e9470f.4.azurestaticapps.net/assets/mindfulBeautyLogo-CwlZGCiT.png"
+              // src="https://gray-desert-0c1e9470f.4.azurestaticapps.net/assets/mindfulBeautyLogo-CwlZGCiT.png"
+              src={mindfulBeautyNew}
               alt="Mindful Beauty" 
-              className="h-12 w-auto"
+              className="h-20 w-auto"
             />
           </div>
 
           {/* Centered title */}
           <div className="flex-1 text-center">
-            <h1 className="text-[24px] font-semibold text-mindfulBlack">Bridal Look Generator</h1>
+            <h1 className="text-[24px] font-semibold text-mindfulBlack max-sm:hidden">Bridal Look Generator</h1>
           </div>
 
           {/* Mobile menu button - pushed to the right */}
@@ -31,6 +34,10 @@ const Header = () => {
           {/* Empty div for desktop to maintain spacing */}
           <div className="hidden md:block flex-shrink-0 w-12"></div>
         </div>
+      </div>
+
+      <div>
+          <h1 className="w-fit mx-auto text-[24px] font-semibold text-mindfulBlack pt-5 hidden max-sm:block">Bridal Look Generator</h1>
       </div>
     </header>
   );

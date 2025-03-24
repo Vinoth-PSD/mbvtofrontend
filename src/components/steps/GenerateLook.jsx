@@ -17,7 +17,7 @@ const GenerateLook = ({ selectedLook, userPhoto, isGenerating, onBack, onGenerat
       </div>
     ) : (
       <>
-        <div className="grid grid-cols-2 gap-12">
+        <div className="grid grid-cols-2 gap-12 max-sm:grid-cols-1">
           <div className="space-y-4">
             <h3 className="text-xl font-semibold text-mindfulBlack">Selected Look</h3>
             <div className="relative rounded-lg overflow-hidden shadow-lg">
@@ -41,7 +41,7 @@ const GenerateLook = ({ selectedLook, userPhoto, isGenerating, onBack, onGenerat
           </div>
         </div>
 
-        <div className="mt-8 flex justify-center space-x-4">
+        <div className="mt-8 flex justify-center space-x-4 max-sm:flex-col max-sm:space-y-5 max-sm:space-x-0">
           <button
             onClick={onBack}
             className="px-8 py-3 text-main border-2 border-main hover:bg-main hover:text-white rounded-lg transition-all duration-300 font-medium"
@@ -51,7 +51,7 @@ const GenerateLook = ({ selectedLook, userPhoto, isGenerating, onBack, onGenerat
           <button
             onClick={onGenerate}
             disabled={isGenerating}
-            className={`px-12 py-3 bg-main text-white rounded-lg transition-all duration-300 font-medium text-lg flex items-center
+            className={`px-12 py-3 bg-main text-white rounded-lg transition-all duration-300 font-medium text-lg flex items-center max-sm:justify-center
               ${isGenerating ? 'opacity-50 cursor-not-allowed' : 'hover:bg-opacity-90'}`}
           >
             <SparklesIcon className="w-6 h-6 mr-2" />

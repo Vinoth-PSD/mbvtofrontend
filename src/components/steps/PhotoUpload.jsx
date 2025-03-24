@@ -40,7 +40,7 @@ const UploadCard = ({ userPhoto, onPhotoUpload, onPhotoChange }) => (
         <div className="py-12">
           <UserIcon className="w-16 h-16 mx-auto text-gray-400 mb-4" />
           <label className="cursor-pointer">
-            <span className="bg-main text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all duration-300">
+            <span className="bg-main text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all duration-300 pb-2">
               Select Your Photo
             </span>
             <input
@@ -69,7 +69,7 @@ const UploadCard = ({ userPhoto, onPhotoUpload, onPhotoChange }) => (
 
 const PhotoUpload = ({ selectedLook, userPhoto, onPhotoUpload, onBack, onNext }) => (
   <div className="max-w-5xl mx-auto">
-    <div className="grid grid-cols-2 gap-12">
+    <div className="grid grid-cols-2 gap-12 max-sm:grid-cols-1">
       <SelectedLookCard selectedLook={selectedLook} onBack={onBack} />
       <UploadCard 
         userPhoto={userPhoto} 
