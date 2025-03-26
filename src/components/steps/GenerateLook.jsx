@@ -1,4 +1,5 @@
 import { SparklesIcon } from '@heroicons/react/24/outline';
+import { Circles } from 'react-loader-spinner'
 
 const GenerateLook = ({ selectedLook, userPhoto, isGenerating, onBack, onGenerate }) => (
   <div className="max-w-5xl mx-auto">
@@ -8,11 +9,23 @@ const GenerateLook = ({ selectedLook, userPhoto, isGenerating, onBack, onGenerat
     
     {isGenerating ? (
       <div className="flex flex-col items-center justify-center space-y-4">
-        <img 
+        {/* <img 
           src="https://gray-desert-0c1e9470f.4.azurestaticapps.net/assets/loading.gif" 
           alt="Generating..." 
           className="w-24 h-24"
-        />
+        /> */}
+
+        <Circles
+          height="80"
+          width="80"
+          color="#FF197D"
+          ariaLabel="circles-loading"
+          wrapperStyle={{}}
+          wrapperClass=""
+          visible={true}
+          />
+
+
         <p className="text-lg text-gray-600">Please wait while we create your look...</p>
       </div>
     ) : (

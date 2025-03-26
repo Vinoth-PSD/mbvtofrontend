@@ -40,7 +40,7 @@ const UploadCard = ({ userPhoto, onPhotoUpload, onPhotoChange }) => (
         <div className="py-12">
           <UserIcon className="w-16 h-16 mx-auto text-gray-400 mb-4" />
           <label className="cursor-pointer">
-            <span className="bg-main text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all duration-300 pb-2">
+            <span className="bg-main text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all duration-300">
               Select Your Photo
             </span>
             <input
@@ -55,14 +55,15 @@ const UploadCard = ({ userPhoto, onPhotoUpload, onPhotoChange }) => (
           </p>
         </div>
       )}
-      {userPhoto && (
+
+      {/* {userPhoto && (
         <button
           onClick={onPhotoChange}
           className="mt-4 text-gray-600 hover:text-main transition-colors"
         >
           Change Photo
         </button>
-      )}
+      )} */}
     </div>
   </div>
 );
