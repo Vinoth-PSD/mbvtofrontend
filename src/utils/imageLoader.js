@@ -50,6 +50,7 @@ async function loadCategoryImages() {
   try {
     for (const mainCategory of mainCategories) {
       const subcats = getSubcategories(mainCategory);
+      console.log("subcats",subcats)
       
       if (subcats.length > 0) {
         const subCategoryImages = subcats.map(subcat => ({
