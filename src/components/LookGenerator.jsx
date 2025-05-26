@@ -280,6 +280,7 @@ const LookGenerator = () => {
                 isGenerating={isGenerating}
                 onBack={() => setStep(2)}
                 onGenerate={generateLook}
+                onPhotoUpload={handlePhotoUpload}
               />
             )}
 

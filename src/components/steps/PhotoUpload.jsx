@@ -1,4 +1,5 @@
 import { UserIcon } from '@heroicons/react/24/outline';
+import { useRef } from 'react';
 
 const SelectedLookCard = ({ selectedLook, onBack }) => (
   <div className="space-y-4">
@@ -22,51 +23,69 @@ const SelectedLookCard = ({ selectedLook, onBack }) => (
   </div>
 );
 
-const UploadCard = ({ userPhoto, onPhotoUpload, onPhotoChange }) => (
-  <div className="space-y-4">
-    <h2 className="text-2xl font-bold text-mindfulBlack">Upload Your Photo</h2>
-    <div className={`border-2 border-dashed rounded-lg ${
-      userPhoto ? 'border-main' : 'border-gray-300'
-    } p-4 text-center`}>
-      {userPhoto ? (
-        <div className="relative rounded-lg overflow-hidden shadow-lg">
-          <img
-            src={userPhoto}
-            alt="Preview"
-            className="w-full aspect-square object-cover"
-          />
-        </div>
-      ) : (
-        <div className="py-12">
-          <UserIcon className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-          <label className="cursor-pointer">
-            <span className="bg-main text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all duration-300">
-              Select Your Photo
-            </span>
+const UploadCard = ({ userPhoto, onPhotoUpload }) => {
+  const fileInputRef = useRef(null);
+
+  const handleChangePhoto = () => {
+    fileInputRef.current.click();
+  };
+
+  return (
+    <div className="space-y-4">
+      <h2 className="text-2xl font-bold text-mindfulBlack">Upload Your Photo</h2>
+      <div className={`border-2 border-dashed rounded-lg ${
+        userPhoto ? 'border-main' : 'border-gray-300'
+      } p-4 text-center`}>
+        {userPhoto ? (
+          <div className="relative rounded-lg overflow-hidden shadow-lg">
+            <img
+              src={userPhoto}
+              alt="Preview"
+              className="w-full aspect-square object-cover"
+            />
+          </div>
+        ) : (
+          <div className="py-12">
+            <UserIcon className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+            <label className="cursor-pointer">
+              <span className="bg-main text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all duration-300">
+                Select Your Photo
+              </span>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={onPhotoUpload}
+                className="hidden"
+              />
+            </label>
+            <p className="mt-2 text-sm text-gray-500">
+              JPG, PNG files are allowed
+            </p>
+          </div>
+        )}
+
+        {userPhoto && (
+          <div>
             <input
+              ref={fileInputRef}
               type="file"
               accept="image/*"
               onChange={onPhotoUpload}
               className="hidden"
             />
-          </label>
-          <p className="mt-2 text-sm text-gray-500">
-            JPG, PNG files are allowed
-          </p>
-        </div>
-      )}
-
-      {/* {userPhoto && (
-        <button
-          onClick={onPhotoChange}
-          className="mt-4 text-gray-600 hover:text-main transition-colors"
-        >
-          Change Photo
-        </button>
-      )} */}
+            <button
+              onClick={handleChangePhoto}
+              className="mt-4 text-gray-600 hover:text-main transition-colors"
+            >
+              Change Photo
+            </button>
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const PhotoUpload = ({ selectedLook, userPhoto, onPhotoUpload, onBack, onNext }) => (
   <div className="max-w-5xl mx-auto">
@@ -75,7 +94,6 @@ const PhotoUpload = ({ selectedLook, userPhoto, onPhotoUpload, onBack, onNext })
       <UploadCard 
         userPhoto={userPhoto} 
         onPhotoUpload={onPhotoUpload}
-        onPhotoChange={() => onPhotoUpload({ target: { files: [] } })}
       />
     </div>
 
