@@ -24,13 +24,15 @@ function getImagesForCategory(categoryPath) {
 }
 
 function getSubcategories(mainCategory) {
+  console.log("mainCategory",mainCategory)
   try {
     const allFiles = import.meta.glob('/public/images/VTOGallery/**', { eager: true });
     const subcategories = new Set();
-    
+    console.log("allFiles",allFiles)
     Object.keys(allFiles).forEach(path => {
       // Extract subcategory from path: /VTOGallery/mainCategory/subcategory/...
       const match = path.match(new RegExp(`/VTOGallery/${mainCategory}/([^/]+)`));
+      // console.log("match",match)
       if (match && match[1]) {
         subcategories.add(match[1]);
       }
@@ -44,7 +46,7 @@ function getSubcategories(mainCategory) {
 }
 
 async function loadCategoryImages() {
-  const mainCategories = ['ByProgramme', 'ByRegion', 'ByTraditions'];
+  const mainCategories = ['ByProgramme', 'ByRegion', 'ByTraditions', 'ByFeaturedKeralaBrides'];
   const categories = [];
 
   try {
