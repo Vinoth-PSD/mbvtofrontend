@@ -7,22 +7,22 @@ const SubcategoryCard = ({ subcategory, onClick }) => {
 
   // Check if this subcategory has subcategories or looks
   const hasSubcategories = subcategory.subcategories && subcategory.subcategories.length > 0;
-  const hasLooks = subcategory.looks && subcategory.looks.length > 0;
+  const hasCategoryPath = subcategory.categoryPath;
 
   return (
     <button
       onClick={() => onClick(subcategory)}
       className="border rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
     >
-      <h4 className="font-medium p-3 bg-gray-50 border-b">
+      <h4 className="font-medium p-3 bg-main text-white border-b">
         {formatSubcategoryName(subcategory.name)}
       </h4>
       <div className="p-4">
         <p className="text-gray-600">
           {hasSubcategories 
             ? `${subcategory.subcategories.length} subcategories` 
-            : hasLooks 
-              ? `${subcategory.looks.length} looks available`
+            : hasCategoryPath 
+              ? 'Click to view images'
               : 'No content available'
           }
         </p>

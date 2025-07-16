@@ -4,10 +4,23 @@ const Breadcrumb = ({ selectedCategory, selectedSubcategory, selectedSubSubcateg
     return name.replace(/([A-Z])/g, ' $1').trim();
   };
 
+  // Handle category click - clear all selections
+  const handleCategoryClick = () => {
+    onCategoryClick(null);
+    onSubcategoryClick(null);
+    onSubSubcategoryClick(null);
+  };
+
+  // Handle subcategory click - clear subcategory and subsubcategory
+  const handleSubcategoryClick = () => {
+    onSubcategoryClick(null);
+    onSubSubcategoryClick(null);
+  };
+
   return (
     <div className="flex items-center gap-2 mb-6 text-sm">
       <button 
-        onClick={() => onCategoryClick(null)}
+        onClick={handleCategoryClick}
         className={`text-main hover:underline ${!selectedCategory && 'font-bold'}`}
       >
         Categories
@@ -16,7 +29,7 @@ const Breadcrumb = ({ selectedCategory, selectedSubcategory, selectedSubSubcateg
         <>
           <span className="text-gray-400">/</span>
           <button 
-            onClick={() => onSubcategoryClick(null)}
+            onClick={handleCategoryClick}
             className={`text-main hover:underline ${!selectedSubcategory && 'font-bold'}`}
           >
             {formatName(selectedCategory.name)}
@@ -27,7 +40,7 @@ const Breadcrumb = ({ selectedCategory, selectedSubcategory, selectedSubSubcateg
         <>
           <span className="text-gray-400">/</span>
           <button 
-            onClick={() => onSubSubcategoryClick(null)}
+            onClick={handleSubcategoryClick}
             className={`text-main hover:underline ${!selectedSubSubcategory && 'font-bold'}`}
           >
             {formatName(selectedSubcategory.name)}
@@ -37,7 +50,12 @@ const Breadcrumb = ({ selectedCategory, selectedSubcategory, selectedSubSubcateg
       {selectedSubSubcategory && (
         <>
           <span className="text-gray-400">/</span>
-          <span className="font-bold">{formatName(selectedSubSubcategory.name)}</span>
+          <button 
+            onClick={() => onSubSubcategoryClick(null)}
+            className="text-main hover:underline font-bold"
+          >
+            {formatName(selectedSubSubcategory.name)}
+          </button>
         </>
       )}
     </div>

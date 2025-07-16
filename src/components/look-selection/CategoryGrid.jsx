@@ -17,7 +17,7 @@ const CategoryCard = ({ category, onClick }) => {
         <p className="text-gray-600">
           {category.subcategories ? 
             `${category.subcategories.length} subcategories` : 
-            `${category.looks.length} looks`}
+            'Click to view images'}
         </p>
       </div>
     </button>

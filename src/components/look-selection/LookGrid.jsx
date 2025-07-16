@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { loadImagesForCategory, getTotalImageCount } from '../../utils/imageLoader';
 
 const LookCard = ({ look, onClick }) => (
   <button
@@ -14,6 +15,13 @@ const LookCard = ({ look, onClick }) => (
       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300" />
     </div>
   </button>
+);
+
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center py-12">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-main"></div>
+    <span className="ml-3 text-gray-600">Loading images...</span>
+  </div>
 );
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
@@ -92,6 +100,10 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
 const LookGrid = ({ subcategory, onBack, onLookSelect }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [totalImages, setTotalImages] = useState(0);
   const imagesPerPage = 20;
 
   // Format the subcategory name to be more readable
@@ -99,17 +111,90 @@ const LookGrid = ({ subcategory, onBack, onLookSelect }) => {
     return name.replace(/([A-Z])/g, ' $1').trim();
   };
 
+  // Load images when component mounts or page changes
+  useEffect(() => {
+    const loadImages = async () => {
+      if (!subcategory.categoryPath) {
+        setError('No category path available');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+        console.log('Loading images for category path:', subcategory.categoryPath, 'page:', currentPage);
+        
+        // Load images for current page
+        const loadedImages = await loadImagesForCategory(subcategory.categoryPath, currentPage, imagesPerPage);
+        setImages(loadedImages);
+        
+        // Get total image count if not already set
+        if (totalImages === 0) {
+          const total = getTotalImageCount(subcategory.categoryPath);
+          setTotalImages(total);
+        }
+        
+        console.log('Loaded', loadedImages.length, 'images for page', currentPage);
+      } catch (err) {
+        console.error('Error loading images:', err);
+        setError('Failed to load images. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadImages();
+  }, [subcategory.categoryPath, currentPage]);
+
   // Calculate pagination
-  const totalPages = Math.ceil(subcategory.looks.length / imagesPerPage);
-  const startIndex = (currentPage - 1) * imagesPerPage;
-  const endIndex = startIndex + imagesPerPage;
-  const currentImages = subcategory.looks.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(totalImages / imagesPerPage);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
     // Scroll to top of the grid
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  if (loading) {
+    return (
+      <div className="border rounded-lg overflow-hidden shadow-lg">
+        <h4 className="font-medium p-4 bg-main text-white flex justify-between items-center">
+          <span>{formatSubcategoryName(subcategory.name)}</span>
+          <button 
+            onClick={onBack}
+            className="text-sm bg-white text-main px-3 py-1 rounded hover:bg-gray-100"
+          >
+            Back
+          </button>
+        </h4>
+        <div className="p-6">
+          <LoadingSpinner />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="border rounded-lg overflow-hidden shadow-lg">
+        <h4 className="font-medium p-4 bg-main text-white flex justify-between items-center">
+          <span>{formatSubcategoryName(subcategory.name)}</span>
+          <button 
+            onClick={onBack}
+            className="text-sm bg-white text-main px-3 py-1 rounded hover:bg-gray-100"
+          >
+            Back
+          </button>
+        </h4>
+        <div className="p-6">
+          <div className="text-center text-red-500 py-8">
+            {error}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="border rounded-lg overflow-hidden shadow-lg">
@@ -124,24 +209,33 @@ const LookGrid = ({ subcategory, onBack, onLookSelect }) => {
       </h4>
       <div className="p-6">
         <div className="mb-4 text-sm text-gray-600">
-          Showing {startIndex + 1}-{Math.min(endIndex, subcategory.looks.length)} of {subcategory.looks.length} images
+          Showing {images.length} of {totalImages} images
+          {totalPages > 1 && ` (Page ${currentPage} of ${totalPages})`}
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {currentImages.map((look) => (
-            <LookCard 
-              key={look.id} 
-              look={look} 
-              onClick={onLookSelect}
-            />
-          ))}
-        </div>
-        
-        {totalPages > 1 && (
-          <Pagination 
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
+        {images.length === 0 ? (
+          <div className="text-center text-gray-500 py-8">
+            No images found for this category.
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {images.map((look) => (
+                <LookCard 
+                  key={look.id} 
+                  look={look} 
+                  onClick={onLookSelect}
+                />
+              ))}
+            </div>
+            
+            {totalPages > 1 && (
+              <Pagination 
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            )}
+          </>
         )}
       </div>
     </div>

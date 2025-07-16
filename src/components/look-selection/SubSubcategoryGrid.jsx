@@ -17,7 +17,7 @@ const SubSubcategoryCard = ({ subSubcategory, onClick }) => {
         {formatSubSubcategoryName(subSubcategory.name)}
       </h4>
       <div className="p-4">
-        <p className="text-gray-600">{looksCount} looks available</p>
+        <p className="text-gray-600">Click to view images</p>
       </div>
     </button>
   );

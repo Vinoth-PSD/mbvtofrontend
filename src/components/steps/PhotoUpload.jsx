@@ -10,9 +10,9 @@ const SelectedLookCard = ({ selectedLook, onBack }) => (
         alt={selectedLook.title}
         className="w-full aspect-square object-cover"
       />
-      <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-3">
+      {/* <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-3">
         <p className="text-lg font-medium">{selectedLook.title}</p>
-      </div>
+      </div> */}
     </div>
     <button
       onClick={onBack}
