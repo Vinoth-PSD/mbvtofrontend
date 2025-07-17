@@ -1,5 +1,5 @@
 // Azure Blob Storage configuration
-const AZURE_BLOB_BASE_URL = '/azure-images/mbimages/VTOGallery';
+const AZURE_BLOB_BASE_URL = 'https://mbimagestorage.blob.core.windows.net/mbimages/VTOGallery';
 
 // Import the generated manifest
 import manifestData from '../data/gallery-manifest.json';
