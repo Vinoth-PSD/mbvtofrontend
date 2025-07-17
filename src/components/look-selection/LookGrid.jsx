@@ -123,7 +123,6 @@ const LookGrid = ({ subcategory, onBack, onLookSelect }) => {
       try {
         setLoading(true);
         setError(null);
-        console.log('Loading images for category path:', subcategory.categoryPath, 'page:', currentPage);
         
         // Load images for current page
         const loadedImages = await loadImagesForCategory(subcategory.categoryPath, currentPage, imagesPerPage);
@@ -135,7 +134,6 @@ const LookGrid = ({ subcategory, onBack, onLookSelect }) => {
           setTotalImages(total);
         }
         
-        console.log('Loaded', loadedImages.length, 'images for page', currentPage);
       } catch (err) {
         console.error('Error loading images:', err);
         setError('Failed to load images. Please try again.');

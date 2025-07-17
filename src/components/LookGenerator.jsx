@@ -70,6 +70,11 @@ const LookGenerator = () => {
     }
   };
 
+  const handleClearPhoto = () => {
+    setUserPhoto(null);
+    setUserPhotoFile(null);
+  };
+
   const fetchImageAsFile = async (imageUrl) => {
     const response = await fetch(imageUrl);
     const blob = await response.blob();
@@ -296,6 +301,7 @@ const LookGenerator = () => {
                 selectedLook={selectedLook}
                 userPhoto={userPhoto}
                 onPhotoUpload={handlePhotoUpload}
+                onClearPhoto={handleClearPhoto}
                 onBack={() => setStep(1)}
                 onNext={() => setStep(3)}
               />

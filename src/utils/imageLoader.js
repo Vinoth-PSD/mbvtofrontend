@@ -30,23 +30,16 @@ async function getImagesForCategory(categoryPath, page = 1, pageSize = 20) {
     const category = findCategoryByPath(categoryPath);
     
     if (!category || !category.files) {
-      console.log('Category not found or has no files:', categoryPath);
       return [];
     }
     
     // Construct the Azure Blob URL for the category
     const azurePath = `${AZURE_BLOB_BASE_URL}/${categoryPath}`;
     
-    console.log('Loading images for category:', categoryPath);
-    console.log('Azure path:', azurePath);
-    console.log('Total files in category:', category.files.length);
-    
     // Calculate pagination
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const pageFiles = category.files.slice(startIndex, endIndex);
-    
-    console.log(`Loading page ${page}: files ${startIndex + 1}-${Math.min(endIndex, category.files.length)}`);
     
     // Generate image objects for the current page
     pageFiles.forEach((imageName, index) => {
@@ -59,8 +52,6 @@ async function getImagesForCategory(categoryPath, page = 1, pageSize = 20) {
         title: id.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
       });
     });
-    
-    console.log('Images loaded for page:', images.length);
     
   } catch (error) {
     console.error('Error loading images for category:', categoryPath, error);
@@ -116,8 +107,6 @@ function getSubSubcategories(mainCategoryName, subcategoryName) {
 async function loadCategoryStructure() {
   const categories = [];
 
-  console.log('Loading category structure from manifest...');
-
   try {
     for (const mainCategory of manifestData.children) {
       const subcategories = [];
@@ -155,7 +144,6 @@ async function loadCategoryStructure() {
       });
     }
     
-    console.log('Category structure loaded:', categories);
     return categories;
   } catch (error) {
     console.error('Error in loadCategoryStructure:', error);
@@ -165,8 +153,25 @@ async function loadCategoryStructure() {
 
 // Function to load images for a specific category on demand with pagination
 async function loadImagesForCategory(categoryPath, page = 1, pageSize = 20) {
-  console.log('Loading images on demand for:', categoryPath, 'page:', page);
-  return await getImagesForCategory(categoryPath, page, pageSize);
+  const category = findCategoryByPath(categoryPath);
+  
+  if (!category || !category.files || category.files.length === 0) {
+    return [];
+  }
+
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const pageFiles = category.files.slice(startIndex, endIndex);
+
+  const azurePath = `${AZURE_BLOB_BASE_URL}/${categoryPath}`;
+  
+  const images = pageFiles.map((filename, index) => ({
+    id: `${categoryPath}-${startIndex + index + 1}`,
+    title: `Look ${startIndex + index + 1}`,
+    image: `${azurePath}/${filename}`
+  }));
+
+  return images;
 }
 
 // Backward compatibility function
