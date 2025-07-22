@@ -7,14 +7,12 @@ const GenerateLook = ({ selectedLook, userPhoto, isGenerating, onBack, onGenerat
 
   const handleChangePhoto = (e) => {
     e.preventDefault();
-    console.log('Change photo clicked in GenerateLook');
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
   const handleFileChange = (e) => {
-    console.log('File selected in GenerateLook');
     if (onPhotoUpload) {
       onPhotoUpload(e);
     }

@@ -9,6 +9,7 @@ import {
 import Breadcrumb from './look-selection/Breadcrumb';
 import CategoryGrid from './look-selection/CategoryGrid';
 import SubcategoryGrid from './look-selection/SubcategoryGrid';
+import SubSubcategoryGrid from './look-selection/SubSubcategoryGrid';
 import LookGrid from './look-selection/LookGrid';
 import PhotoUpload from './steps/PhotoUpload';
 import GenerateLook from './steps/GenerateLook';
@@ -42,6 +43,7 @@ const LookGenerator = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+  const [selectedSubSubcategory, setSelectedSubSubcategory] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -66,6 +68,11 @@ const LookGenerator = () => {
       setUserPhotoFile(file);
       setUserPhoto(URL.createObjectURL(file));
     }
+  };
+
+  const handleClearPhoto = () => {
+    setUserPhoto(null);
+    setUserPhotoFile(null);
   };
 
   const fetchImageAsFile = async (imageUrl) => {
@@ -183,14 +190,22 @@ const LookGenerator = () => {
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
     setSelectedSubcategory(null);
+    setSelectedSubSubcategory(null);
   };
 
   const handleSubcategorySelect = (subcategory) => {
     setSelectedSubcategory(subcategory);
+    setSelectedSubSubcategory(null);
+  };
+
+  const handleSubSubcategorySelect = (subSubcategory) => {
+    setSelectedSubSubcategory(subSubcategory);
   };
 
   const handleBack = () => {
-    if (selectedSubcategory) {
+    if (selectedSubSubcategory) {
+      setSelectedSubSubcategory(null);
+    } else if (selectedSubcategory) {
       setSelectedSubcategory(null);
     } else if (selectedCategory) {
       setSelectedCategory(null);
@@ -237,8 +252,10 @@ const LookGenerator = () => {
                 <Breadcrumb 
                   selectedCategory={selectedCategory}
                   selectedSubcategory={selectedSubcategory}
+                  selectedSubSubcategory={selectedSubSubcategory}
                   onCategoryClick={setSelectedCategory}
                   onSubcategoryClick={setSelectedSubcategory}
+                  onSubSubcategoryClick={setSelectedSubSubcategory}
                 />
 
                 <div className="grid grid-cols-1 gap-8">
@@ -252,9 +269,25 @@ const LookGenerator = () => {
                       subcategories={selectedCategory.subcategories} 
                       onSubcategorySelect={handleSubcategorySelect}
                     />
+                  ) : !selectedSubSubcategory ? (
+                    // Check if the selected subcategory has its own subcategories
+                    selectedSubcategory.subcategories ? (
+                      <SubSubcategoryGrid 
+                        subSubcategories={selectedSubcategory.subcategories} 
+                        onSubSubcategorySelect={handleSubSubcategorySelect}
+                      />
+                    ) : (
+                      <LookGrid 
+                        key={selectedSubcategory.id}
+                        subcategory={selectedSubcategory}
+                        onBack={handleBack}
+                        onLookSelect={handleLookSelect}
+                      />
+                    )
                   ) : (
                     <LookGrid 
-                      subcategory={selectedSubcategory}
+                      key={selectedSubSubcategory.id}
+                      subcategory={selectedSubSubcategory}
                       onBack={handleBack}
                       onLookSelect={handleLookSelect}
                     />
@@ -268,6 +301,7 @@ const LookGenerator = () => {
                 selectedLook={selectedLook}
                 userPhoto={userPhoto}
                 onPhotoUpload={handlePhotoUpload}
+                onClearPhoto={handleClearPhoto}
                 onBack={() => setStep(1)}
                 onNext={() => setStep(3)}
               />
